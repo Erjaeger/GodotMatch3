@@ -4,7 +4,6 @@
 
 [sub_resource type="StreamTexture" id=1]
 flags = 4
-load_path = "res://.import/Tile1.png-af4e4ff17a24be12910149a3c8b948f0.stex"
 
 [node name="PlayableTile" type="Node2D"]
 script = ExtResource( 2 )
