@@ -5,6 +5,10 @@ var PlayableTileScene := preload('../GameElements/PlayableTile.tscn')
 var myLevelGrid = []
 var selectShapeTile = null
 var cellSize = null
+var my_seed = "Godot Rocks"
+
+func _ready() -> void:
+	seed(my_seed.hash())
 
 func generate_tile_on_tile_map() -> void:
 	var nbrTileWidth = 5
@@ -23,6 +27,8 @@ func generate_tile_on_tile_map() -> void:
 		myLevelGrid[v.x][v.y] = PlayableTileScene.instance()
 		myLevelGrid[v.x][v.y].position = setShapePositionFromTileIndex(v)
 		add_child(myLevelGrid[v.x][v.y])
+		
+	checkIfWinningCombinaison()
 	
 
 func _input(event):
@@ -43,12 +49,13 @@ func _input(event):
 				var shapeWhereReleased = myLevelGrid[posMouseOnTile.x][posMouseOnTile.y]
 				print(selectShapeTile['posOnArray'], posMouseOnTile)
 				var switchOkay = checkIfReleaseShapePossible(selectShapeTile['posOnArray'], posMouseOnTile)
-				print(switchOkay)
 				if(switchOkay):
 					myLevelGrid[posMouseOnTile.x][posMouseOnTile.y] = selectShapeTile['shape']
 					myLevelGrid[posMouseOnTile.x][posMouseOnTile.y].position = setShapePositionFromTileIndex(posMouseOnTile)
 					myLevelGrid[selectShapeTile.posOnArray.x][selectShapeTile.posOnArray.y] = shapeWhereReleased
 					myLevelGrid[selectShapeTile.posOnArray.x][selectShapeTile.posOnArray.y].position = setShapePositionFromTileIndex(selectShapeTile.posOnArray)
+#					Je teste si il y a des combinaisons gagnantes
+					checkIfWinningCombinaison()
 				else :
 					selectShapeTile['shape'].position = setShapePositionFromTileIndex(selectShapeTile['posOnArray'])
 				selectShapeTile = null
@@ -61,7 +68,37 @@ func _input(event):
 	if event is InputEventMouseMotion:
 		if(selectShapeTile != null):
 			selectShapeTile['shape'].position = event.position
-		
+			
+func checkIfWinningCombinaison():
+	var startValueX = {'shape':null, 'position':null}
+	var endValueX = {'shape':null, 'position':null}
+	var winCon = []
+#	Check horizontal combinaison
+	for x in range(myLevelGrid.size()):
+		for y in range(myLevelGrid[x].size()):
+			if myLevelGrid[x][y] != null:
+				if myLevelGrid[x][y].shape != startValueX.shape:
+					print(startValueX, ' ', endValueX)
+					if(startValueX.shape != null && endValueX.shape != null && endValueX.position.x - startValueX.position.x >= 3 ):
+						winCon.push({
+							'startValue': startValueX,
+							'endValue': endValueX,
+						})
+					startValueX = {
+						'shape': myLevelGrid[x][y].shape,
+						'position' : Vector2(x, y)
+						}
+					endValueX = {
+						'shape':null, 'position':null
+					}
+						
+				elif myLevelGrid[x][y].shape == startValueX.shape:
+					endValueX = {
+						'shape': myLevelGrid[x][y].shape,
+						'position' : Vector2(x, y)
+					}
+	print("wincon", winCon)
+	
 func checkIfReleaseShapePossible(posOrigin:Vector2, posRelease: Vector2) -> bool:
 #	Test d'un déplacement horizontal
 	if((posRelease.y == posOrigin.y + 1 && posRelease.x == posOrigin.x) || (posRelease.y == posOrigin.y - 1 && posRelease.x == posOrigin.x)):

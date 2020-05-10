@@ -6,8 +6,10 @@ var textures = [
 	preload('../Visuals/Texture3.png'),
 	preload('../Visuals/Texture4.png')
 	]
+	
+var shape = null
 
 func _ready() -> void:
-	var randomText = randi() % 4
-	$Sprite.texture = textures[randomText]
+	shape = randi() % 4
+	$Sprite.texture = textures[shape]
 	return
