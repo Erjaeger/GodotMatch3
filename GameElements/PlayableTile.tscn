@@ -8,5 +8,15 @@ flags = 4
 [node name="PlayableTile" type="Node2D"]
 script = ExtResource( 2 )
 
+[node name="ColorRect" type="ColorRect" parent="."]
+margin_left = -17.9191
+margin_top = -18.7336
+margin_right = 22.0809
+margin_bottom = 21.2664
+color = Color( 1, 1, 1, 0 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
 [node name="Sprite" type="Sprite" parent="."]
 texture = SubResource( 1 )

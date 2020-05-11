@@ -47,7 +47,6 @@ func _input(event):
 #			Je relache mon clique et je switch les cases
 			if(!event.pressed):
 				var shapeWhereReleased = myLevelGrid[posMouseOnTile.x][posMouseOnTile.y]
-				print(selectShapeTile['posOnArray'], posMouseOnTile)
 				var switchOkay = checkIfReleaseShapePossible(selectShapeTile['posOnArray'], posMouseOnTile)
 				if(switchOkay):
 					myLevelGrid[posMouseOnTile.x][posMouseOnTile.y] = selectShapeTile['shape']
@@ -70,34 +69,38 @@ func _input(event):
 			selectShapeTile['shape'].position = event.position
 			
 func checkIfWinningCombinaison():
-	var startValueX = {'shape':null, 'position':null}
-	var endValueX = {'shape':null, 'position':null}
 	var winCon = []
 #	Check horizontal combinaison
 	for x in range(myLevelGrid.size()):
 		for y in range(myLevelGrid[x].size()):
-			if myLevelGrid[x][y] != null:
-				if myLevelGrid[x][y].shape != startValueX.shape:
-					print(startValueX, ' ', endValueX)
-					if(startValueX.shape != null && endValueX.shape != null && endValueX.position.x - startValueX.position.x >= 3 ):
-						winCon.push({
-							'startValue': startValueX,
-							'endValue': endValueX,
-						})
-					startValueX = {
-						'shape': myLevelGrid[x][y].shape,
-						'position' : Vector2(x, y)
-						}
-					endValueX = {
-						'shape':null, 'position':null
-					}
-						
-				elif myLevelGrid[x][y].shape == startValueX.shape:
-					endValueX = {
-						'shape': myLevelGrid[x][y].shape,
-						'position' : Vector2(x, y)
-					}
-	print("wincon", winCon)
+			if(myLevelGrid[x][y] != null):
+				winCon += checkTileCombo(Vector2(x, y), myLevelGrid[x][y].shape, false, false)
+	for t in winCon:
+		myLevelGrid[t.x][t.y].selected()
+	
+func checkTileCombo(tilePosition : Vector2, previousShape : int, fromX: bool, fromY: bool) -> Array:
+	var results = []
+	var currentTile = myLevelGrid[tilePosition.x][tilePosition.y]
+	if(currentTile == null):
+		return results
+	var currentShape = currentTile.shape
+	if currentShape == previousShape:
+		results += [tilePosition]
+		var xSize = myLevelGrid.size()
+		var resultXLeft = []
+		var resultXRight = []
+		var resultYTop = []
+		var resultYBottom = []
+		if(tilePosition.x < xSize-1):
+			var ySize = myLevelGrid[tilePosition.x].size()
+			if(tilePosition.y < ySize-1):
+				resultXLeft = checkTileCombo(Vector2(tilePosition.x-1, tilePosition.y), previousShape, true, false)
+				resultXRight = checkTileCombo(Vector2(tilePosition.x+1, tilePosition.y), previousShape, true, false)
+				resultYTop = checkTileCombo(Vector2(tilePosition.x, tilePosition.y-1), previousShape, false, true)
+				resultYBottom = checkTileCombo(Vector2(tilePosition.x, tilePosition.y+1), previousShape, false, true)
+				return results
+		
+	return results
 	
 func checkIfReleaseShapePossible(posOrigin:Vector2, posRelease: Vector2) -> bool:
 #	Test d'un déplacement horizontal

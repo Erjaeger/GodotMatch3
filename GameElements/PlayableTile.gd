@@ -13,3 +13,6 @@ func _ready() -> void:
 	shape = randi() % 4
 	$Sprite.texture = textures[shape]
 	return
+	
+func selected() -> void:
+	$ColorRect.color = Color(252, 186, 3, 1)
